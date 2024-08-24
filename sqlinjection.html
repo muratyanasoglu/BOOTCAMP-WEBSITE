@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection - CyberSecure</title>
+    <style>
+        /* General Styles */
+        body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #333333;
+        color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 150px 20px 100px; /* Adjusted padding for positioning */
+            position: relative;
+            z-index: 2; /* Ensure content is above the matrix effect */
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: #444444; /* Slightly lighter gray for contrast */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 2em;
+            color: #00bcd4;
+            margin-bottom: 10px;
+        }
+
+        .section p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .code-example {
+            background: #222222;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-x: auto;
+            font-family: monospace;
+            color: #00ff00; /* Neon green color for code */
+            margin-bottom: 20px;
+        }
+
+        .login-section {
+            background: #444444;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .login-section form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-section input[type="text"],
+        .login-section input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #555555;
+            background-color: #222222;
+            color: #ffffff;
+        }
+
+        .login-section input[type="submit"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #00bcd4;
+            color: #ffffff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .login-section input[type="submit"]:hover {
+            background-color: #0097a7;
+            transform: scale(1.05);
+        }
+
+        .login-section .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #222222;
+            border-radius: 4px;
+            color: #00ff00;
+            min-height: 50px;
+            word-wrap: break-word;
+        }
+
+        .playground {
+            background: #333333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+
+        .playground input[type="text"],
+        .playground textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #555555;
+            background-color: #222222;
+            color: #ffffff;
+        }
+
+        .playground input[type="submit"] {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #00bcd4;
+            color: #ffffff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .playground input[type="submit"]:hover {
+            background-color: #0097a7;
+            transform: scale(1.05);
+        }
+
+        .playground .result {
+            margin-top: 20px;
+            padding: 10px;
+            background: #222222;
+            border-radius: 4px;
+            color: #00ff00;
+            min-height: 50px;
+            word-wrap: break-word;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 180px 10px 100px; /* Increased top padding for mobile */
+            }
+
+            .section h1 {
+                font-size: 2em;
+            }
+
+            .section p {
+                font-size: 1em;
+            }
+        }
+
+        /* Matrix Effect Styles */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1; /* Ensure it's behind the content */
+        }
+
+        .matrix-bg canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Header Styles */
+        header {
+            background: #333333; /* Dark gray background */
+            color: #ffffff;
+            padding: 15px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Strong shadow for depth */
+            transition: background-color 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00bcd4; /* Bright blue for the logo */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #ffffff; /* Logo color change on hover */
+        }
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1100; /* Ensure button is above other elements */
+            position: absolute;
+            right: 40px; /* Moved a bit to the left */
+            top: 15px;
+        }
+
+        .menu-icon {
+            width: 30px;
+            height: 4px;
+            background: #ffffff; /* White color for menu icon */
+            margin: 6px 0;
+            transition: 0.3s ease;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 15px; /* Reduced gap between items */
+            align-items: center;
+        }
+
+        .nav-menu li {
+            display: inline;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px; /* Reduced font size */
+            font-weight: 500;
+            padding: 8px 12px; /* Reduced padding */
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background-color: #00bcd4;
+            color: #ffffff;
+        }
+
+        .contact-btn {
+            background-color: #00bcd4; /* Bright blue for contact button */
+            color: #ffffff;
+            font-weight: bold;
+            padding: 8px 16px; /* Reduced padding */
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background-color: #0097a7;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                z-index: 1100; /* Ensure it is on top of header */
+            }
+
+            .menu-icon {
+                display: none;
+            }
+
+            .menu-toggle img {
+                width: 30px; /* Adjust size of fries menu icon */
+                height: auto;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background: #000000; /* Black background for mobile menu */
+                border-top: 1px solid #333;
+                padding: 10px 0;
+                z-index: 1000; /* Ensure menu is above other elements */
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            .menu-icon::before {
+                content: '';
+                position: absolute;
+                width: 40px;
+                height: 4px;
+                background: #ffffff;
+                top: -12px;
+                left: 0;
+                transition: 0.3s ease;
+            }
+
+            .menu-icon::after {
+                content: '';
+                position: absolute;
+                width: 40px;
+                height: 4px;
+                background: #ffffff;
+                top: 12px;
+                left: 0;
+                transition: 0.3s ease;
+            }
+
+            .menu-toggle.active .menu-icon {
+                background: transparent;
+            }
+
+            .menu-toggle.active .menu-icon::before {
+                transform: rotate(45deg);
+                top: 0;
+            }
+
+            .menu-toggle.active .menu-icon::after {
+                transform: rotate(-45deg);
+                top: 0;
+            }
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #333333; /* Dark gray background */
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            position: relative;
+            width: 100%;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+            margin-top: 50px; /* Added margin to push footer down */
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00bcd4; /* Bright blue for the logo */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            color: #ffffff; /* Logo color change on hover */
+        }
+
+        .footer-links {
+            list-style: none;
+            margin: 20px 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px; /* Increased font size for page links */
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00bcd4; /* Color change on hover */
+        }
+
+        .footer-social {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* Increased gap between icons */
+        }
+
+        .footer-social a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-social img {
+            width: 40px; /* Increased icon size */
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-social a:hover img {
+            transform: scale(1.2); /* Slight scale effect on hover */
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbbbbb; /* Light gray for text */
+        }
+
+        /* Contact Form Styles */
+        .contact-form {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+
+        .contact-form h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+        }
+
+        .contact-form input[type="submit"] {
+            background-color: #00bcd4; /* Bright blue for submit button */
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-form input[type="submit"]:hover {
+            background-color: #0097a7; /* Darker blue on hover */
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        @media (max-width: 768px) {
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .footer-links li {
+                display: block;
+                margin: 5px 0;
+            }
+
+            .footer-social {
+                margin-top: 10px;
+            }
+
+            .footer-social img {
+                width: 35px; /* Adjusted size for smaller screens */
+                height: 35px;
+            }
+
+            .contact-form {
+                padding: 0 10px;
+            }
+
+            .contact-form h2 {
+                font-size: 18px;
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .contact-form input[type="submit"] {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Matrix Effect -->
+    <div class="matrix-bg">
+        <canvas id="matrix"></canvas>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="header-container">
+                <a href="index.html" class="logo">CyberSecure</a>
+                <button class="menu-toggle" aria-label="Toggle navigation">
+                    <img src="fries_menu.png" alt="Fries Menu Icon">
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="xss.html">XSS Attack</a></li>
+                    <li><a href="sqlinjection.html">SQL Injection</a></li>
+                    <li><a href="other.html">Cybersecurity Topics</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                    <li><a href="credits.html">Credits</a></li>
+                    <li><a href="contact_us.html" class="contact-btn">Contact Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <section class="section">
+            <h1>SQL Injection</h1>
+            <h2>What is SQL Injection?</h2>
+            <p>SQL Injection is a type of security vulnerability that allows an attacker to interfere with the queries that an application makes to its database. It typically allows an attacker to view data that they are not normally able to retrieve, such as other users' data, or to perform other malicious actions on the database.</p>
+
+            <h2>Types of SQL Injection</h2>
+            <p>There are several types of SQL Injection attacks, including:</p>
+            <ul>
+                <li><strong>In-band SQL Injection:</strong> The attacker uses the same communication channel to both launch the attack and retrieve the results.</li>
+                <li><strong>Inferential (Blind) SQL Injection:</strong> The attacker sends data to the server and observes the response, but does not directly see the data returned.</li>
+                <li><strong>Out-of-band SQL Injection:</strong> The attacker uses a different channel to launch the attack and retrieve the results.</li>
+            </ul>
+
+            <h2>Examples of SQL Injection</h2>
+            <p>Here are some examples of SQL Injection vulnerabilities:</p>
+
+            <div class="code-example">
+                <!-- Example 1: Basic SQL Injection -->
+                &lt;!-- Basic SQL Injection Example --&gt;<br>
+                &lt;form action="login.php" method="post"&gt;<br>
+                &nbsp;&nbsp;&lt;input type="text" name="username" placeholder="Username"&gt;<br>
+                &nbsp;&nbsp;&lt;input type="password" name="password" placeholder="Password"&gt;<br>
+                &nbsp;&nbsp;&lt;input type="submit" value="Login"&gt;<br>
+                &lt;/form&gt;<br>
+                <br>
+                &lt;!-- Vulnerable code --&gt;<br>
+                &lt;?php <br>
+                &nbsp;&nbsp;$query = "SELECT * FROM users WHERE username = '".$_POST['username']."' AND password = '".$_POST['password']."'";<br>
+                &nbsp;&nbsp;$result = mysqli_query($connection, $query);<br>
+                &lt;?&gt;<br>
+                <br>
+                &lt;!-- Malicious input: --&gt;<br>
+                Username: admin' -- <br>
+                Password: [anything]
+            </div>
+
+            <div class="code-example">
+                <!-- Example 2: Union-based SQL Injection -->
+                &lt;!-- Union-based SQL Injection Example --&gt;<br>
+                &lt;form action="search.php" method="get"&gt;<br>
+                &nbsp;&nbsp;&lt;input type="text" name="search" placeholder="Search"&gt;<br>
+                &nbsp;&nbsp;&lt;input type="submit" value="Search"&gt;<br>
+                &lt;/form&gt;<br>
+                <br>
+                &lt;!-- Vulnerable code --&gt;<br>
+                &lt;?php <br>
+                &nbsp;&nbsp;$query = "SELECT * FROM products WHERE name LIKE '%".$_GET['search']."%'";<br>
+                &nbsp;&nbsp;$result = mysqli_query($connection, $query);<br>
+                &lt;?&gt;<br>
+                <br>
+                &lt;!-- Malicious input: --&gt;<br>
+                search: ' UNION SELECT username, password FROM users --
+            </div>
+        </section>
+
+        <section class="login-section">
+            <h2>SQL Injection Practice: Login Form</h2>
+            <p>Use the login form below to practice SQL Injection. Follow the instructions to exploit the vulnerability and gain unauthorized access.</p>
+
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+                <input type="submit" value="Login">
+            </form>
+
+            <div id="login-result" class="result"></div>
+
+            <h3>SQL Injection Instructions:</h3>
+            <p>To perform SQL Injection on this login form, follow these steps:</p>
+            <ul>
+                <li>In the "Username" field, enter: <code>admin' --</code></li>
+                <li>In the "Password" field, enter anything. The SQL injection will bypass the password check.</li>
+                <li>Click "Login" to see the result.</li>
+                <li>The injected SQL query will look like this: <code>SELECT * FROM users WHERE username = 'admin' -- ' AND password = '[anything]'</code></li>
+                <li>The <code>--</code> sequence comments out the rest of the SQL query, effectively bypassing the password check.</li>
+            </ul>
+        </section>
+
+        <section class="playground">
+            <h2>SQL Injection Playground</h2>
+            <p>Try entering different inputs to see how SQL Injection vulnerabilities can be exploited:</p>
+            <form id="sql-playground-form">
+                <textarea id="sql-input" placeholder="Enter your SQL Injection code here" rows="3"></textarea>
+                <input type="submit" value="Run">
+            </form>
+            <div id="sql-result" class="result"></div>
+        </section>
+
+        <a href="index.html" class="button">Back to Home</a>
+    </div>
+
+ <!-- Footer -->
+ <footer style="position: relative; bottom: 0; width: 100%; background-color: #333;">
+    <div class="footer-content">
+        <a href="index.html" class="footer-logo">CyberSecure</a>
+        <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="xss.html">XSS Attack</a></li>
+            <li><a href="sqlinjection.html">SQL Injection</a></li>
+            <li><a href="other.html">Cybersecurity Topics</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="resources.html">Resources</a></li>
+            <li><a href="credits.html">Credits</a></li>
+            <li><a href="contact_us.html">Contact Us</a></li>
+        </ul>
+        <div class="footer-social">
+            <a href="https://github.com/muratyanasoglu" aria-label="GitHub">
+                <img src="github.png" alt="GitHub Icon">
+            </a>
+            <a href="https://www.linkedin.com/in/muratyanasoglu/" aria-label="LinkedIn">
+                <img src="linkedin.png" alt="LinkedIn Icon">
+            </a>
+            <a href="https://medium.com/@academyyanasoglu" aria-label="Medium">
+                <img src="medium.png" alt="Medium Icon">
+            </a>
+            <a href="https://muratyanasoglu-taupe.vercel.app/" aria-label="About">
+                <img src="about.png" alt="About Icon">
+            </a>
+        </div>
+        <div class="contact-form">
+            <h2>Contact Us</h2>
+            <form action="mailto:akademiyanasoglu@gmail.com" method="post" enctype="text/plain">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+                <input type="submit" value="Send Message">
+            </form>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2024 CyberSecure. All rights reserved.
+        </div>
+    </div>
+</footer>
+</body>
+
+    <!-- JavaScript to Load Header and Footer -->
+    <script>
+        // Hamburger menu toggle functionality
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Matrix Effect JavaScript
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charArray = chars.split('');
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff00'; /* Neon green color */
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // SQL Injection Login Form Script
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+
+            if (username === "admin' --") {
+                document.getElementById('login-result').innerHTML = `
+                    <p><strong>Simulated SQL Query:</strong></p>
+                    <pre>${query}</pre>
+                    <p><strong>Result:</strong> Login successful as admin!</p>
+                    <p><strong>Explanation:</strong> The SQL query was modified by the injected input. The query <code>SELECT * FROM users WHERE username = 'admin' -- ' AND password = '[anything]'</code> effectively stops after <code>'admin'</code> due to the <code>--</code> sequence, which comments out the rest of the query. As a result, the database checks only the username and bypasses the password check, allowing access as 'admin'.</p>
+                `;
+            } else {
+                document.getElementById('login-result').innerHTML = `
+                    <p><strong>Simulated SQL Query:</strong></p>
+                    <pre>${query}</pre>
+                    <p><strong>Result:</strong> Login failed. Invalid username or password.</p>
+                `;
+            }
+        });
+
+        // SQL Injection Playground Script
+        document.getElementById('sql-playground-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userInput = document.getElementById('sql-input').value;
+            document.getElementById('sql-result').innerHTML = '';
+
+            // Simulate a basic SQL query result for educational purposes
+            if (userInput.toLowerCase().includes('select')) {
+                document.getElementById('sql-result').innerHTML = `
+                    <p><strong>Simulated SQL Query:</strong></p>
+                    <pre>SELECT * FROM users WHERE username = '${userInput}'</pre>
+                    <p><strong>Result:</strong></p>
+                    <pre>username: admin<br>password: secret</pre>
+                `;
+            } else {
+                document.getElementById('sql-result').innerHTML = 'No results found.';
+            }
+        });
+    </script>
+</body>
+</html>

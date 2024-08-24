@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - CyberSecure</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+            background: #333333; /* Dark gray background matching header/footer */
+            overflow-x: hidden; /* Hide horizontal scrollbars */
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 150px 20px 100px; /* Adjust padding to distance from header */
+            position: relative;
+            z-index: 2; /* Ensure content is above the matrix effect */
+            background: #444444; /* Slightly lighter gray for contrast */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .accordion {
+            background-color: #555;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .accordion::after {
+            content: "+";
+            font-size: 1.5em;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffffff;
+        }
+
+        .accordion.active, .accordion:hover {
+            background-color: #00bcd4;
+        }
+
+        .accordion.active::after {
+            content: "-";
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: #333333;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .panel p {
+            padding: 18px 0;
+            margin: 0;
+            font-size: 1em;
+            color: #cccccc;
+        }
+
+        .panel a {
+            color: #00bcd4;
+            text-decoration: none;
+        }
+
+        .panel a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 180px 10px 100px; /* Adjusted for better mobile positioning */
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .accordion {
+                font-size: 1em;
+            }
+
+            .panel p {
+                font-size: 0.9em;
+            }
+        }
+
+        /* Matrix Effect Styles */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1; /* Ensure it's behind the content */
+        }
+
+        .matrix-bg canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Header Styles */
+        header {
+            background: #333333; /* Dark gray background */
+            color: #ffffff;
+            padding: 15px 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Strong shadow for depth */
+            transition: background-color 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00bcd4; /* Bright blue for the logo */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .logo:hover {
+            color: #ffffff; /* Logo color change on hover */
+        }
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1100; /* Ensure button is above other elements */
+            position: absolute;
+            right: 40px; /* Moved a bit to the left */
+            top: 15px;
+        }
+
+        .menu-icon {
+            width: 30px;
+            height: 4px;
+            background: #ffffff; /* White color for menu icon */
+            margin: 6px 0;
+            transition: 0.3s ease;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 15px; /* Reduced gap between items */
+            align-items: center;
+        }
+
+        .nav-menu li {
+            display: inline;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px; /* Reduced font size */
+            font-weight: 500;
+            padding: 8px 12px; /* Reduced padding */
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background-color: #00bcd4;
+            color: #ffffff;
+        }
+
+        .contact-btn {
+            background-color: #00bcd4; /* Bright blue for contact button */
+            color: #ffffff;
+            font-weight: bold;
+            padding: 8px 16px; /* Reduced padding */
+            border-radius: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-btn:hover {
+            background-color: #0097a7;
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                z-index: 1100; /* Ensure it is on top of header */
+            }
+
+            .menu-icon {
+                display: none;
+            }
+
+            .menu-toggle img {
+                width: 30px; /* Adjust size of fries menu icon */
+                height: auto;
+            }
+
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px;
+                left: 0;
+                background: #333333; /* Dark gray background for mobile menu */
+                border-top: 1px solid #333;
+                padding: 10px 0;
+                z-index: 1000; /* Ensure menu is above other elements */
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-menu li {
+                margin: 15px 0;
+                text-align: center;
+            }
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #333333; /* Dark gray background */
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+            z-index: 3; /* Ensure it's above the matrix effect */
+            position: relative;
+            top: 50vh; /* Footer position adjusted upwards */
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00bcd4; /* Bright blue for the logo */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            color: #ffffff; /* Logo color change on hover */
+        }
+
+        .footer-links {
+            list-style: none;
+            margin: 20px 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px; /* Increased font size for page links */
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #00bcd4; /* Color change on hover */
+        }
+
+        .footer-social {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* Increased gap between icons */
+        }
+
+        .footer-social a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-social img {
+            width: 40px; /* Increased icon size */
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-social a:hover img {
+            transform: scale(1.2); /* Slight scale effect on hover */
+        }
+
+        .footer-bottom {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbbbbb; /* Light gray for text */
+        }
+
+        /* Contact Form Styles */
+        .contact-form {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+
+        .contact-form h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+        }
+
+        .contact-form input[type="submit"] {
+            background-color: #00bcd4; /* Bright blue for submit button */
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-form input[type="submit"]:hover {
+            background-color: #0097a7; /* Darker blue on hover */
+            transform: scale(1.05); /* Slight scale effect on hover */
+        }
+
+        @media (max-width: 768px) {
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .footer-links li {
+                display: block;
+                margin: 5px 0;
+            }
+
+            .footer-social {
+                margin-top: 10px;
+            }
+
+            .footer-social img {
+                width: 35px; /* Adjusted size for smaller screens */
+                height: 35px;
+            }
+
+            .contact-form {
+                padding: 0 10px;
+            }
+
+            .contact-form h2 {
+                font-size: 18px;
+            }
+
+            .contact-form input,
+            .contact-form textarea {
+                font-size: 14px;
+                padding: 8px;
+            }
+
+            .contact-form input[type="submit"] {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Matrix Effect -->
+    <div class="matrix-bg">
+        <canvas id="matrix"></canvas>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="header-container">
+                <a href="index.html" class="logo">CyberSecure</a>
+                <button class="menu-toggle" aria-label="Toggle navigation">
+                    <img src="fries_menu.png" alt="Fries Menu Icon">
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="xss.html">XSS Attack</a></li>
+                    <li><a href="sqlinjection.html">SQL Injection</a></li>
+                    <li><a href="other.html">Cybersecurity Topics</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                    <li><a href="credits.html">Credits</a></li>
+                    <li><a href="contact_us.html" class="contact-btn">Contact Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Frequently Asked Questions (FAQ)</h1>
+
+        <!-- Accordion Sections -->
+        <button class="accordion">What is Cybersecurity?</button>
+        <div class="panel">
+            <p>
+                Cybersecurity is the practice of protecting systems, networks, and programs from digital attacks. These cyberattacks are usually aimed at accessing, changing, or destroying sensitive information; extorting money from users; or interrupting normal business processes.
+            </p>
+            <p>
+                For more details, you can explore this <a href="https://www.cisco.com/c/en/us/products/security/what-is-cybersecurity.html" target="_blank">Cybersecurity Overview by Cisco</a>.
+            </p>
+        </div>
+
+        <button class="accordion">Why is Cybersecurity Important?</button>
+        <div class="panel">
+            <p>
+                In today's connected world, everyone benefits from advanced cybersecurity programs. Cyber threats can affect everyone, from individuals to large organizations. Effective cybersecurity measures can help protect personal information, business data, and even national security.
+            </p>
+            <p>
+                To understand the significance of cybersecurity, check out this <a href="https://www.kaspersky.com/resource-center/definitions/why-is-cyber-security-important" target="_blank">article by Kaspersky</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What are the Types of Cyber Threats?</button>
+        <div class="panel">
+            <p>
+                The most common types of cyber threats include malware, ransomware, phishing, and denial of service (DoS) attacks. Each of these threats can cause significant damage to individuals and organizations, which is why understanding and preparing for them is crucial.
+            </p>
+            <p>
+                For an in-depth look at various cyber threats, refer to this <a href="https://medium.com/@kariim.baggarii/what-do-you-know-about-it-security-and-cyber-threats-8c78deb08ce0" target="_blank">Medium Article</a>.
+            </p>
+        </div>
+
+        <button class="accordion">How Can I Protect Myself Online?</button>
+        <div class="panel">
+            <p>
+                Protecting yourself online involves using strong, unique passwords for different accounts, enabling two-factor authentication, and being cautious about the links and attachments you click on. Regularly updating your software and using security tools like antivirus software can also help keep you safe.
+            </p>
+            <p>
+                For practical tips on online protection, visit this <a href="https://staysafeonline.org/stay-safe-online/" target="_blank">Stay Safe Online resource by NCSA</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What is Phishing?</button>
+        <div class="panel">
+            <p>
+                Phishing is a type of cyberattack where attackers pose as legitimate entities to trick individuals into providing sensitive information such as usernames, passwords, or credit card numbers. These attacks often come in the form of emails or messages that appear to be from a trusted source.
+            </p>
+            <p>
+                Learn more about phishing and how to protect yourself from it in this <a href="https://www.phishing.org/what-is-phishing" target="_blank">Phishing Guide</a>.
+            </p>
+        </div>
+
+        <button class="accordion">How Do I Know If My Computer is Infected with Malware?</button>
+        <div class="panel">
+            <p>
+                Signs that your computer may be infected with malware include slow performance, frequent crashes, unexpected pop-ups, and programs that open or close on their own. If you suspect your computer is infected, running a full system scan with your antivirus software is recommended.
+            </p>
+            <p>
+                For more on detecting and removing malware, read this <a href="https://www.malwarebytes.com/malware" target="_blank">Malwarebytes guide</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What Should I Do If I Suspect a Cyberattack?</button>
+        <div class="panel">
+            <p>
+                If you suspect a cyberattack, disconnect from the internet to prevent further damage. Then, run a full system scan with your antivirus software, change your passwords, and monitor your accounts for any unusual activity. It's also a good idea to contact a cybersecurity professional if the attack is severe.
+            </p>
+            <p>
+                For further steps to take after a cyberattack, refer to this <a href="https://cyberprecedent.com.au/lawcouncil/images/cyber/CP-What-to-Do.pdf" target="_blank">Article Link</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What are the Best Practices for Cybersecurity?</button>
+        <div class="panel">
+            <p>
+                Best practices for cybersecurity include regularly updating software, using strong and unique passwords, enabling two-factor authentication, backing up data, and educating yourself about the latest threats and how to avoid them.
+            </p>
+            <p>
+                Explore more best practices in this <a href="https://www.cisa.gov/topics/cybersecurity-best-practices" target="_blank">CISA Online article</a>.
+            </p>
+        </div>
+
+        <!-- Additional FAQ Entries -->
+        <button class="accordion">What is Ransomware?</button>
+        <div class="panel">
+            <p>
+                Ransomware is a type of malicious software designed to block access to a computer system or data until a ransom is paid. It typically spreads through phishing emails or by exploiting vulnerabilities in the software. Once infected, the user may be locked out of their system or find their data encrypted.
+            </p>
+            <p>
+                For more information on ransomware and how to protect against it, visit this <a href="https://www.cisa.gov/stopransomware" target="_blank">CISA Ransomware Guide</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What is Two-Factor Authentication (2FA)?</button>
+        <div class="panel">
+            <p>
+                Two-Factor Authentication (2FA) is an extra layer of security used to ensure that people trying to gain access to an online account are who they say they are. First, a user will enter their username and a password. Then, instead of immediately gaining access, they will be required to provide another piece of information, such as a code sent to their phone.
+            </p>
+            <p>
+                Learn more about 2FA and how it can protect your accounts in this <a href="https://authy.com/what-is-2fa/" target="_blank">Authy guide</a>.
+            </p>
+        </div>
+
+        <button class="accordion">What is a VPN and Why Should I Use It?</button>
+        <div class="panel">
+            <p>
+                A Virtual Private Network (VPN) allows you to create a secure connection to another network over the Internet. VPNs can be used to access region-restricted websites, shield your browsing activity from prying eyes on public Wi-Fi, and more. A VPN encrypts your internet traffic and disguises your online identity, making it harder for third parties to track your activities online.
+            </p>
+            <p>
+                For a detailed overview of VPNs, check out this <a href="https://www.expressvpn.com/what-is-vpn" target="_blank">ExpressVPN guide</a>.
+            </p>
+        </div>
+
+        <button class="accordion">How Can I Create a Strong Password?</button>
+        <div class="panel">
+            <p>
+                A strong password is at least 12 characters long, includes a mix of letters (both uppercase and lowercase), numbers, and symbols. Avoid using easily guessed passwords like "password123" or personal information such as your birthday. Consider using a password manager to generate and store strong passwords securely.
+            </p>
+            <p>
+                For tips on creating strong passwords, refer to this <a href="https://support.microsoft.com/en-us/windows/create-and-use-strong-passwords-c5cebb49-8c53-4f5e-2bc4-fe357ca048eb" target="_blank">Microsoft guide</a>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <a href="index.html" class="footer-logo">CyberSecure</a>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="xss.html">XSS Attack</a></li>
+                <li><a href="sqlinjection.html">SQL Injection</a></li>
+                <li><a href="other.html">Cybersecurity Topics</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="resources.html">Resources</a></li>
+                <li><a href="credits.html">Credits</a></li>
+                <li><a href="contact_us.html">Contact Us</a></li>
+            </ul>
+            <div class="footer-social">
+                <a href="https://github.com/muratyanasoglu" aria-label="GitHub">
+                    <img src="github.png" alt="GitHub Icon">
+                </a>
+                <a href="https://www.linkedin.com/in/muratyanasoglu/" aria-label="LinkedIn">
+                    <img src="linkedin.png" alt="LinkedIn Icon">
+                </a>
+                <a href="https://medium.com/@academyyanasoglu" aria-label="Medium">
+                    <img src="medium.png" alt="Medium Icon">
+                </a>
+                <a href="https://muratyanasoglu-taupe.vercel.app/" aria-label="About">
+                    <img src="about.png" alt="About Icon">
+                </a>
+            </div>
+            <div class="contact-form">
+                <h2>Contact Us</h2>
+                <form action="mailto:akademiyanasoglu@gmail.com" method="post" enctype="text/plain">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+                    <input type="submit" value="Send Message">
+                </form>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2024 CyberSecure. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Matrix Effect JavaScript -->
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charArray = chars.split('');
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array.from({ length: columns }).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff00'; /* Neon green color */
+            ctx.font = `${fontSize}px monospace`;
+
+            for (let i = 0; i < drops.length; i++) {
+                const char = charArray[Math.floor(Math.random() * charArray.length)];
+                ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Hamburger menu toggle functionality
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.querySelector('.nav-menu').classList.toggle('active');
+        });
+
+        // Accordion functionality
+        const accordions = document.querySelectorAll('.accordion');
+
+        accordions.forEach(accordion => {
+            accordion.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
